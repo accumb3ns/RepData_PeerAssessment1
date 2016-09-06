@@ -4,22 +4,56 @@ output:
   html_document:
     keep_md: true
 ---
-
+library(dplyr)
+library(lattice)
 
 ## Loading and preprocessing the data
-
+unzip("activity.zip")
+activity <- read.csv("activity.csv", colClasses = c("integer", "Date", "integer"))
 
 
 ## What is mean total number of steps taken per day?
+activity_summary <- activity %>% 
+                      group_by(date) %>% 
+                      summarize(total_steps = sum(steps))
+                      
+hist(activity_summary$total_steps, 
+      breaks = seq(0,25000, by=2500), 
+      ylim = c(0,20), 
+      main = "Steps per day", 
+      xlab = "Steps")
 
-
+mean_daily_steps <- mean(activity_summary$total_steps, na.rm = TRUE)
+median_daily_steps <- median(activity_summary$total_steps, na.rm = TRUE)
 
 ## What is the average daily activity pattern?
+proper_interval = seq(0,1435,by = 5)
+activity <- cbind(activity,proper_interval)
+interval_summary <- activity %>%
+                      group_by(interval,proper_interval) %>%
+                      summarize(mean_steps = mean(steps, na.rm = TRUE)) 
+                      
+with(interval_summary, plot(proper_interval, mean_steps, type = "l", ylab = ("Mean steps taken")))
 
-
+max_original_interval <- interval_summary$interval[which.max(interval_summary$mean_steps)]
+max_proper_interval <- interval_summary$proper_interval[which.max(interval_summary$mean_steps)]
 
 ## Imputing missing values
+total_rows_with_NA <- sum(!complete.cases(activity))
 
+impute_NA <- function(x,proper_interval) ifelse(is.na(x), interval_summary$mean_steps[(proper_interval/5)+1],x) 
 
-
+activity_imputed <- activity %>%
+                mutate(imputed_steps = impute_NA(steps,proper_interval))
+                
 ## Are there differences in activity patterns between weekdays and weekends?
+activity_imputed$day_of_week <- weekdays(activity_imputed$date)
+
+is_weekend_day <- function(x) factor(as.integer(x == "Saturday" | x == "Sunday"), labels = c("Weekday", "Weekend"))
+
+week_vs_weekend_summary <- activity_imputed %>%
+                              mutate(part_of_week = is_weekend_day(day_of_week)) %>%
+                              group_by(part_of_week,proper_interval) %>%
+                              summarize(mean_steps = mean(steps, na.rm = TRUE))
+                              
+xyplot(mean_steps ~ proper_interval | part_of_week, week_vs_weekend_summary, type = "l", layout = c(1,2), xlab = "5 minute interval", ylab = "Mean Number of Steps")
