@@ -54,7 +54,7 @@ hist(activity_summary$total_steps,
       xlab = "Steps")
 ```
 
-![](PA1_template_files/figure-html/Q1:steps histogram-1.png)<!-- -->
+![](PA1_template_files/figure-html/Q1 steps histogram-1.png)<!-- -->
 
 Finally, let's calculate and report the mean and median of the total number of steps taken per day.
 
@@ -88,7 +88,7 @@ interval_summary <- activity %>%
 with(interval_summary, plot(proper_interval, mean_steps, type = "l", ylab = ("Mean steps taken")))
 ```
 
-![](PA1_template_files/figure-html/Q2:daily activity-1.png)<!-- -->
+![](PA1_template_files/figure-html/Q2 daily activity-1.png)<!-- -->
 
 Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 This can be answered 2 ways - either as the original interval reading or as our "proper" recomputed interval. Both are shown here.
@@ -146,7 +146,7 @@ hist(imputed_activity_summary$total_imputed_steps,
       xlab = "Steps")
 ```
 
-![](PA1_template_files/figure-html/Q3: hist mean and median-1.png)<!-- -->
+![](PA1_template_files/figure-html/Q3 hist mean and median-1.png)<!-- -->
 
 ```r
 print(mean_daily_steps <- mean(imputed_activity_summary$total_imputed_steps, na.rm = TRUE))
@@ -181,6 +181,6 @@ week_vs_weekend_summary <- activity_imputed %>%
 xyplot(mean_steps ~ proper_interval | part_of_week, week_vs_weekend_summary, type = "l", layout = c(1,2), xlab = "5 minute interval", ylab = "Mean Number of Steps")
 ```
 
-![](PA1_template_files/figure-html/Q4: weekends-1.png)<!-- -->
+![](PA1_template_files/figure-html/Q4 weekends-1.png)<!-- -->
 
 ## Thank you!!
